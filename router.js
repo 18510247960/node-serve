@@ -11,13 +11,14 @@ router.get('/', cont.testAPI)
 
 // 用户登录接口
 router.post('/api/login',(req, res) => {
-  const phone = req.body.phone
-  console.log(phone)
   const password = req.body.password
-  const sqlStr = 'select * from user where phone = ?'
-  conn.query(sqlStr, phone, (err,results) => {
+  let sqlStr = ''
+  let field = ''
+  if(req.body.phone) field = req.body.phone, sqlStr = 'select * from user where phone = ?'
+  if(req.body.userName) field = req.body.userName, sqlStr = 'select * from user where userName = ?'
+  conn.query(sqlStr, field, (err,results) => {
       if(err) return res.json({code: 1, message:'获取数据失败!'})
-      if(results.length !== 1) return res.json({code: 1, message:'数据不存在!'})
+      if(results.length !== 1) return res.json({code: 1, message:'账号不存在!'})
       if(results[0].password === password){
         res.json({ code: 0, message: '登录成功!'})
       }else{
